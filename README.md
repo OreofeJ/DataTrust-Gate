@@ -1,6 +1,6 @@
 # DataTrust Gate 
 
-An open-source prototype for transparent, community-governed health research data access control, deterministic policy evaluation, and application-level auditing.
+An open-source prototype for transparent, community-governed health research data access control, policy evaluation, and application-level auditing.
 
 > **Prototype & Synthetic Data Notice:** All initial researchers, access requests, governance policies, consent references, and Nigerian state geographic labels are synthetic demonstration records. This prototype demonstrates access authorisation workflows only—it does **not** store, transfer, or expose real patient health records and is **not** yet connected to a live Health Data Cooperative (HDC) instance.
 

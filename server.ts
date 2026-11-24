@@ -269,7 +269,7 @@ export function createApp() {
     });
   });
 
-  // Stateless deterministic evaluation engine endpoint
+  // Stateless evaluation engine endpoint
   app.post('/api/v1/engine/evaluate', async (req: Request, res: Response) => {
     try {
       const body = req.body as {

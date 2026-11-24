@@ -79,7 +79,7 @@
     },
     "AccessRequest": {
       "title": "AccessRequest",
-      "description": "Health research data access request evaluated deterministically against governance policies.",
+      "description": "Health research data access request evaluated against governance policies.",
       "type": "object",
       "properties": {
         "requestId": {
