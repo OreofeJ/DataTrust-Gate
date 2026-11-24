@@ -1,11 +1,11 @@
 import {
-  AccessRequest,
-  ActivityPoint,
-  ComplianceMetrics,
-  DashboardSummary,
-  DecisionDistribution,
+  type AccessRequest,
+  type ActivityPoint,
+  type ComplianceMetrics,
+  type DashboardSummary,
+  type DecisionDistribution,
   NIGERIA_STATES,
-  StateActivityMetric,
+  type StateActivityMetric,
 } from '../types/governance.ts';
 
 export function computeDashboardSummary(requests: AccessRequest[]): DashboardSummary {

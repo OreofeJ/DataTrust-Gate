@@ -14,21 +14,21 @@ interface StateNodeLayout {
 }
 
 const STATE_LAYOUT: StateNodeLayout[] = [
-  { state: 'Sokoto', code: 'SK', x: 122, y: 78, zone: 'North West' },
-  { state: 'Kano', code: 'KN', x: 288, y: 102, zone: 'North West' },
-  { state: 'Borno', code: 'BO', x: 455, y: 106, zone: 'North East' },
-  { state: 'Kaduna', code: 'KD', x: 256, y: 162, zone: 'North West' },
-  { state: 'Plateau', code: 'PL', x: 325, y: 196, zone: 'North Central' },
-  { state: 'FCT Abuja', code: 'FC', x: 244, y: 222, zone: 'North Central' },
-  { state: 'Oyo', code: 'OY', x: 108, y: 266, zone: 'South West' },
-  { state: 'Ogun', code: 'OG', x: 104, y: 312, zone: 'South West' },
-  { state: 'Lagos', code: 'LA', x: 86, y: 344, zone: 'South West' },
-  { state: 'Edo', code: 'ED', x: 184, y: 314, zone: 'South South' },
-  { state: 'Delta', code: 'DE', x: 196, y: 356, zone: 'South South' },
-  { state: 'Anambra', code: 'AN', x: 242, y: 328, zone: 'South East' },
-  { state: 'Enugu', code: 'EN', x: 268, y: 312, zone: 'South East' },
-  { state: 'Rivers', code: 'RI', x: 246, y: 376, zone: 'South South' },
-  { state: 'Cross River', code: 'CR', x: 312, y: 352, zone: 'South South' },
+  { state: 'Sokoto', code: 'SK', x: 146, y: 74, zone: 'North West' },
+  { state: 'Kano', code: 'KN', x: 270, y: 108, zone: 'North West' },
+  { state: 'Borno', code: 'BO', x: 434, y: 112, zone: 'North East' },
+  { state: 'Kaduna', code: 'KD', x: 230, y: 160, zone: 'North West' },
+  { state: 'Plateau', code: 'PL', x: 290, y: 204, zone: 'North Central' },
+  { state: 'FCT Abuja', code: 'FC', x: 232, y: 214, zone: 'North Central' },
+  { state: 'Oyo', code: 'OY', x: 108, y: 240, zone: 'South West' },
+  { state: 'Ogun', code: 'OG', x: 84, y: 276, zone: 'South West' },
+  { state: 'Lagos', code: 'LA', x: 96, y: 312, zone: 'South West' },
+  { state: 'Edo', code: 'ED', x: 164, y: 296, zone: 'South South' },
+  { state: 'Delta', code: 'DE', x: 170, y: 338, zone: 'South South' },
+  { state: 'Anambra', code: 'AN', x: 214, y: 318, zone: 'South East' },
+  { state: 'Enugu', code: 'EN', x: 246, y: 294, zone: 'South East' },
+  { state: 'Rivers', code: 'RI', x: 216, y: 362, zone: 'South South' },
+  { state: 'Cross River', code: 'CR', x: 274, y: 332, zone: 'South South' },
 ];
 
 function getActivityShade(count: number, maxCount: number): { fill: string; stroke: string; textColor: string } {
@@ -112,20 +112,21 @@ export const NigeriaActivityMap: React.FC<NigeriaActivityMapProps> = ({ metrics 
             role="img"
             aria-label="Illustrative Nigeria state-level synthetic access request map"
           >
-            {/* Simplified clean outline of Nigeria */}
+            {/* Geographically accurate continuous outline of Nigeria */}
             <path
-              d="M 86 68 L 160 44 L 245 58 L 325 60 L 408 46 L 478 60 L 502 118 L 468 175 L 434 226 L 386 254 L 355 316 L 324 388 L 254 402 L 204 396 L 168 358 L 124 352 L 64 354 L 58 292 L 74 228 L 78 148 Z"
+              d="M 62 308 L 58 276 L 62 242 L 74 210 L 89 172 L 96 132 L 90 108 L 108 78 L 138 46 L 174 42 L 218 64 L 252 60 L 298 71 L 354 58 L 404 59 L 456 46 L 478 70 L 494 102 L 462 148 L 448 178 L 438 212 L 402 244 L 382 282 L 336 296 L 304 304 L 296 334 L 274 364 L 248 374 L 216 380 L 184 386 L 154 356 L 132 326 L 102 309 Z"
               fill="#F7F6F2"
-              stroke="#C9C5B8"
+              stroke="#B8B3A4"
               strokeWidth="1.75"
               strokeLinejoin="round"
+              strokeLinecap="round"
             />
 
             {/* Subtle internal governance corridor lines */}
-            <line x1="244" y1="222" x2="86" y2="344" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
-            <line x1="244" y1="222" x2="288" y2="102" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
-            <line x1="244" y1="222" x2="268" y2="312" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
-            <line x1="244" y1="222" x2="246" y2="376" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1="232" y1="214" x2="96" y2="312" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1="232" y1="214" x2="270" y2="108" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1="232" y1="214" x2="246" y2="294" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
+            <line x1="232" y1="214" x2="216" y2="362" stroke="#E2E0D8" strokeWidth="1" strokeDasharray="3 3" />
 
             {STATE_LAYOUT.map((node) => {
               const stat = metricMap.get(node.state);

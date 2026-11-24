@@ -1,16 +1,16 @@
-import express, { Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import {
   APP_VERSION,
-  AccessRequest,
-  AuditEvent,
-  ConsentReference,
-  GovernancePolicy,
+  type AccessRequest,
+  type AuditEvent,
+  type ConsentReference,
+  type GovernancePolicy,
   MVP_LABEL,
-  Researcher,
+  type Researcher,
   isValidDataCategoryValue,
   isValidEntityId,
   isValidPurposeValue,
@@ -775,7 +775,8 @@ export function createApp() {
 
 async function startServer() {
   const app = createApp();
-  const isProd = process.env.NODE_ENV === 'production';
+  const isProd =
+    process.env.NODE_ENV === 'production' || Boolean(process.env.K_SERVICE);
 
   if (!isProd) {
     const { createServer: createViteServer } = await import('vite');
@@ -786,6 +787,9 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distDir = path.resolve(__dirname, 'dist');
+    if (!fs.existsSync(path.join(distDir, 'index.html'))) {
+      console.warn(`Warning: production build directory not found at ${distDir}`);
+    }
     app.use(express.static(distDir));
     app.get('*', (_req: Request, res: Response) => {
       res.sendFile(path.join(distDir, 'index.html'));
@@ -798,7 +802,10 @@ async function startServer() {
   });
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+if (
+  process.argv[1] &&
+  fs.realpathSync(path.resolve(process.argv[1])) === fs.realpathSync(__filename)
+) {
   startServer().catch((err) => {
     console.error('Failed to start DataTrust Gate server:', err);
     process.exit(1);

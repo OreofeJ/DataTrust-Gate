@@ -51,28 +51,28 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       label: 'Total Access Requests',
       value: summary.totalRequests,
       context: `${activePolicyCount} active governance policies`,
-      accent: 'text-[#0F1C2E]',
+      bgClass: 'bg-[#244A73] border-[#1D3C5E] hover:bg-[#204267]',
       filter: 'ALL',
     },
     {
       label: 'Approved',
       value: summary.approved,
       context: 'All policy & consent checks passed',
-      accent: 'text-[#176252]',
+      bgClass: 'bg-[#287A55] border-[#216647] hover:bg-[#236D4B]',
       filter: 'APPROVED',
     },
     {
       label: 'Denied',
       value: summary.denied,
       context: 'Failed closed on policy or consent rules',
-      accent: 'text-[#9E2A2B]',
+      bgClass: 'bg-[#79533B] border-[#644430] hover:bg-[#6C4A34]',
       filter: 'DENIED',
     },
     {
       label: 'Awaiting Review',
       value: summary.awaitingReview,
       context: `${summary.reviewCount} panel review · ${summary.pendingCount} pending evaluation`,
-      accent: 'text-[#B4690E]',
+      bgClass: 'bg-[#A66B19] border-[#8D5A14] hover:bg-[#976116]',
       filter: 'REVIEW',
     },
   ];
@@ -86,13 +86,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             key={card.label}
             type="button"
             onClick={() => onNavigateToRequests(card.filter)}
-            className="text-left bg-white border border-[#E2E0D8] rounded-lg p-5 hover:border-[#1F6E72] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#1F6E72]"
+            className={`text-left border rounded-lg p-5 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F1C2E] ${card.bgClass}`}
           >
-            <p className="text-xs font-medium text-[#647182]">{card.label}</p>
-            <p className={`font-mono-tabular text-3xl font-semibold mt-2 ${card.accent}`}>
+            <p className="text-xs font-medium text-white/90">{card.label}</p>
+            <p className="font-mono-tabular text-3xl font-semibold mt-2 text-white">
               {card.value}
             </p>
-            <p className="text-xs text-[#647182] mt-2 truncate">{card.context}</p>
+            <p className="text-xs text-white/80 mt-2 truncate">{card.context}</p>
           </button>
         ))}
       </div>

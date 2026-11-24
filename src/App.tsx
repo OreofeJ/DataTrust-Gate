@@ -298,14 +298,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F7F6F2] text-[#0F1C2E] flex">
       {/* Desktop Left Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-[260px] shrink-0 bg-[#0F1C2E] text-white border-r border-[#1E314A] min-h-screen">
-        <div className="px-5 py-5 border-b border-[#1E314A] flex items-center gap-3">
+      <aside className="hidden lg:flex lg:flex-col w-[260px] shrink-0 bg-[#493526] text-white border-r border-[#5E4533] min-h-screen">
+        <div className="px-5 py-5 border-b border-[#5E4533] flex items-center gap-3">
           <BrandMark size={34} />
           <div className="min-w-0">
             <p className="font-display text-sm font-semibold tracking-tight text-white truncate">
               DataTrust Gate
             </p>
-            <p className="font-mono-tabular text-[11px] text-[#8BBEC0]">
+            <p className="font-mono-tabular text-[11px] text-[#E6D8C8]">
               {MVP_LABEL}
             </p>
           </div>
@@ -323,21 +323,29 @@ export default function App() {
                   if (item.key === 'requests') setRequestsFilterHint('ALL');
                   setActiveNav(item.key);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
                   active
-                    ? 'bg-[#1F6E72] text-white'
-                    : 'text-[#C6D1DF] hover:bg-[#182A42] hover:text-white'
+                    ? 'bg-[#674C38] text-white ring-1 ring-[#D4B99E]/40'
+                    : 'text-[#F5EFE9] hover:bg-[#5A4230] hover:text-white'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
+                <span className="flex items-center gap-3 min-w-0">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{item.label}</span>
+                </span>
+                {active && (
+                  <span
+                    className="w-1.5 h-4 rounded-xs bg-[#E6D8C8] shrink-0"
+                    aria-hidden="true"
+                  />
+                )}
               </button>
             );
           })}
         </nav>
 
-        <div className="px-5 py-4 border-t border-[#1E314A] text-[11px] text-[#9FB0C4] space-y-1">
-          <div className="flex items-center gap-2 text-[#8BBEC0] font-medium">
+        <div className="px-5 py-4 border-t border-[#5E4533] text-[11px] text-[#DECFC0] space-y-1">
+          <div className="flex items-center gap-2 text-[#F5EFE9] font-medium">
             <Activity className="w-3.5 h-3.5" />
             <span>Cloud Firestore Persisted</span>
           </div>
@@ -351,19 +359,19 @@ export default function App() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex">
           <div
-            className="fixed inset-0 bg-[#0F1C2E]/50"
+            className="fixed inset-0 bg-[#2C1F16]/50"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <aside className="relative z-10 w-[260px] bg-[#0F1C2E] text-white flex flex-col min-h-screen">
-            <div className="px-5 py-4 border-b border-[#1E314A] flex items-center justify-between">
+          <aside className="relative z-10 w-[260px] bg-[#493526] text-white flex flex-col min-h-screen">
+            <div className="px-5 py-4 border-b border-[#5E4533] flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <BrandMark size={28} />
-                <span className="font-display text-sm font-semibold">DataTrust Gate</span>
+                <span className="font-display text-sm font-semibold text-white">DataTrust Gate</span>
               </div>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1 text-[#C6D1DF] hover:text-white cursor-pointer"
+                className="p-1 text-[#E6D8C8] hover:text-white cursor-pointer"
                 aria-label="Close navigation menu"
               >
                 <X className="w-5 h-5" />
@@ -381,14 +389,22 @@ export default function App() {
                       setActiveNav(item.key);
                       setMobileMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium cursor-pointer ${
+                    className={`w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-xs font-medium cursor-pointer ${
                       active
-                        ? 'bg-[#1F6E72] text-white'
-                        : 'text-[#C6D1DF] hover:bg-[#182A42]'
+                        ? 'bg-[#674C38] text-white ring-1 ring-[#D4B99E]/40'
+                        : 'text-[#F5EFE9] hover:bg-[#5A4230] hover:text-white'
                     }`}
                   >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    <span>{item.label}</span>
+                    <span className="flex items-center gap-3 min-w-0">
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span>{item.label}</span>
+                    </span>
+                    {active && (
+                      <span
+                        className="w-1.5 h-4 rounded-xs bg-[#E6D8C8] shrink-0"
+                        aria-hidden="true"
+                      />
+                    )}
                   </button>
                 );
               })}
