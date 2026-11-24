@@ -1,6 +1,6 @@
 # DataTrust Gate 
 
-An open-source prototype for transparent, community governed health research data access control, policy evaluation, and application level auditing in Nigeria.
+An opensource system for transparent, community governed health research data access control, policy evaluation, and application level auditing in Nigeria.
 <img width="1892" height="861" alt="dtg" src="https://github.com/user-attachments/assets/8218c750-2918-4e1e-9938-c414099f34dd" />
 
 
