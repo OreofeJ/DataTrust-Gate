@@ -1,8 +1,10 @@
 # DataTrust Gate 
 
-An open-source prototype for transparent, community-governed health research data access control, policy evaluation, and application-level auditing.
+An open-source prototype for transparent, community governed health research data access control, policy evaluation, and application level auditing in Nigeria.
+<img width="1892" height="861" alt="dtg" src="https://github.com/user-attachments/assets/8218c750-2918-4e1e-9938-c414099f34dd" />
 
-> **Prototype & Synthetic Data Notice:** All initial researchers, access requests, governance policies, consent references, and Nigerian state geographic labels are synthetic demonstration records. This prototype demonstrates access authorisation workflows only—it does **not** store, transfer, or expose real patient health records and is **not** yet connected to a live Health Data Cooperative (HDC) instance.
+
+> **App Instance & Synthetic Data Notice:** All initial researchers, access requests, governance policies, consent references, and Nigerian state geographic labels are synthetic demonstration records. This instance demonstrates access authorisation workflows only it does **not** store, transfer, or expose real patient health records and is **not** connected to a live Health Data Cooperative (HDC) instance.
 
 ---
 
@@ -10,7 +12,7 @@ An open-source prototype for transparent, community-governed health research dat
 
 - **Frontend**: React 19, TypeScript, Tailwind CSS v4, custom SVG brand geometry and lightweight SVG data visualisations (Nigeria state activity map, decision distribution donut, compliance gauge, activity timeline).
 - **Backend**: Node.js + Express (`server.ts`) hosting REST endpoints under `/api/v1/*` 
-- **Database & Auth**: Google Cloud Firestore with Firebase Authentication (Google Sign-In) and hardened `firestore.rules`.
+- **Database & Auth**: Google Cloud Firestore with Firebase Authentication (Google Sign-In required) and hardened `firestore.rules`.
 
 
 ## Firestore Collections
