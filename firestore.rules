@@ -1,0 +1,378 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global safety net: default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitive Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isTokenAdmin() {
+      return isEmailVerified() && request.auth.token.email == 'jardinsolicitors@gmail.com';
+    }
+
+    function isAdmin() {
+      return isTokenAdmin() || (
+        isEmailVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 2 && id.size() <= 64 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isNotSeededYet() {
+      return !exists(/databases/$(database)/documents/systemMeta/seedState);
+    }
+
+    function isValidDataCategory(cat) {
+      return cat in [
+        'Demographic information',
+        'Health records',
+        'Mental-health information',
+        'Genomic information',
+        'Location information',
+        'Survey responses',
+        'Other research data'
+      ];
+    }
+
+    function isValidPurpose(purpose) {
+      return purpose in [
+        'Academic research',
+        'Mental-health research',
+        'Public-health research',
+        'AI model development',
+        'Anonymous statistical analysis',
+        'Commercial research'
+      ];
+    }
+
+    // --- Entity Validation Blueprints ---
+    function isValidResearcher(data) {
+      return data.keys().hasAll([
+          'researcherId', 'fullName', 'organisation', 'country', 'stateOrRegion',
+          'roleTitle', 'verificationStatus', 'createdAt', 'createdByUid', 'isSynthetic'
+        ]) &&
+        data.keys().hasOnly([
+          'researcherId', 'fullName', 'organisation', 'country', 'stateOrRegion',
+          'roleTitle', 'verificationStatus', 'createdAt', 'createdByUid', 'isSynthetic'
+        ]) &&
+        isValidId(data.researcherId) &&
+        data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 120 &&
+        data.organisation is string && data.organisation.size() >= 2 && data.organisation.size() <= 140 &&
+        data.country is string && data.country.size() >= 2 && data.country.size() <= 80 &&
+        data.stateOrRegion is string && data.stateOrRegion.size() >= 2 && data.stateOrRegion.size() <= 80 &&
+        data.roleTitle is string && data.roleTitle.size() >= 2 && data.roleTitle.size() <= 100 &&
+        data.verificationStatus in ['VERIFIED', 'PENDING', 'SUSPENDED'] &&
+        data.createdAt is string && data.createdAt.size() >= 10 && data.createdAt.size() <= 40 &&
+        data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128 &&
+        data.isSynthetic is bool;
+    }
+
+    function isValidAccessRequest(data) {
+      return data.keys().hasAll([
+          'requestId', 'researcherId', 'organisation', 'country', 'stateOrRegion',
+          'dataCategory', 'purpose', 'requestedDurationDays', 'consentReferenceId',
+          'submittedAt', 'evaluatedAt', 'decisionStatus', 'decisionExplanation',
+          'evaluatedConditions', 'matchedPolicyIds', 'policyCompliant',
+          'submittedByUid', 'isSynthetic'
+        ]) &&
+        data.keys().hasOnly([
+          'requestId', 'researcherId', 'organisation', 'country', 'stateOrRegion',
+          'dataCategory', 'purpose', 'requestedDurationDays', 'consentReferenceId',
+          'submittedAt', 'evaluatedAt', 'decisionStatus', 'decisionExplanation',
+          'evaluatedConditions', 'matchedPolicyIds', 'policyCompliant',
+          'submittedByUid', 'isSynthetic'
+        ]) &&
+        isValidId(data.requestId) &&
+        isValidId(data.researcherId) &&
+        data.organisation is string && data.organisation.size() >= 2 && data.organisation.size() <= 140 &&
+        data.country is string && data.country.size() >= 2 && data.country.size() <= 80 &&
+        data.stateOrRegion is string && data.stateOrRegion.size() >= 2 && data.stateOrRegion.size() <= 80 &&
+        isValidDataCategory(data.dataCategory) &&
+        isValidPurpose(data.purpose) &&
+        data.requestedDurationDays is int && data.requestedDurationDays >= 1 && data.requestedDurationDays <= 1095 &&
+        data.consentReferenceId is string && data.consentReferenceId.size() <= 64 &&
+        data.submittedAt is string && data.submittedAt.size() >= 10 && data.submittedAt.size() <= 40 &&
+        data.evaluatedAt is string && data.evaluatedAt.size() <= 40 &&
+        data.decisionStatus in ['PENDING', 'APPROVED', 'DENIED', 'REVIEW'] &&
+        data.decisionExplanation is string && data.decisionExplanation.size() <= 1200 &&
+        data.evaluatedConditions is list && data.evaluatedConditions.size() <= 20 &&
+        (data.evaluatedConditions.size() == 0 || (data.evaluatedConditions[0] is string && data.evaluatedConditions[0].size() <= 240)) &&
+        data.matchedPolicyIds is list && data.matchedPolicyIds.size() <= 20 &&
+        (data.matchedPolicyIds.size() == 0 || (data.matchedPolicyIds[0] is string && data.matchedPolicyIds[0].size() <= 64)) &&
+        data.policyCompliant is bool &&
+        data.submittedByUid is string && data.submittedByUid.size() >= 1 && data.submittedByUid.size() <= 128 &&
+        data.isSynthetic is bool;
+    }
+
+    function isValidGovernancePolicy(data) {
+      return data.keys().hasAll([
+          'policyId', 'policyName', 'description', 'permittedOrganisations',
+          'permittedPurposes', 'permittedDataCategories', 'maxDurationDays',
+          'requiresConsent', 'communityRestrictionNote', 'status',
+          'createdAt', 'createdByUid', 'isSynthetic'
+        ]) &&
+        data.keys().hasOnly([
+          'policyId', 'policyName', 'description', 'permittedOrganisations',
+          'permittedPurposes', 'permittedDataCategories', 'maxDurationDays',
+          'requiresConsent', 'communityRestrictionNote', 'status',
+          'createdAt', 'createdByUid', 'isSynthetic'
+        ]) &&
+        isValidId(data.policyId) &&
+        data.policyName is string && data.policyName.size() >= 3 && data.policyName.size() <= 160 &&
+        data.description is string && data.description.size() <= 500 &&
+        data.permittedOrganisations is list && data.permittedOrganisations.size() >= 1 && data.permittedOrganisations.size() <= 30 &&
+        (data.permittedOrganisations[0] is string && data.permittedOrganisations[0].size() <= 140) &&
+        data.permittedPurposes is list && data.permittedPurposes.size() >= 1 && data.permittedPurposes.size() <= 10 &&
+        (data.permittedPurposes[0] is string && data.permittedPurposes[0].size() <= 80) &&
+        data.permittedDataCategories is list && data.permittedDataCategories.size() >= 1 && data.permittedDataCategories.size() <= 10 &&
+        (data.permittedDataCategories[0] is string && data.permittedDataCategories[0].size() <= 80) &&
+        data.maxDurationDays is int && data.maxDurationDays >= 1 && data.maxDurationDays <= 1095 &&
+        data.requiresConsent is bool &&
+        data.communityRestrictionNote is string && data.communityRestrictionNote.size() <= 400 &&
+        data.status in ['ACTIVE', 'INACTIVE'] &&
+        data.createdAt is string && data.createdAt.size() >= 10 && data.createdAt.size() <= 40 &&
+        data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128 &&
+        data.isSynthetic is bool;
+    }
+
+    function isValidConsentReference(data) {
+      return data.keys().hasAll([
+          'consentReferenceId', 'pseudonymousSubjectId', 'organisation',
+          'permittedPurpose', 'permittedDataCategories', 'consentStatus',
+          'expiryDate', 'externalSourceId', 'createdByUid', 'isSynthetic'
+        ]) &&
+        data.keys().hasOnly([
+          'consentReferenceId', 'pseudonymousSubjectId', 'organisation',
+          'permittedPurpose', 'permittedDataCategories', 'consentStatus',
+          'expiryDate', 'externalSourceId', 'createdByUid', 'isSynthetic'
+        ]) &&
+        isValidId(data.consentReferenceId) &&
+        isValidId(data.pseudonymousSubjectId) &&
+        data.organisation is string && data.organisation.size() >= 2 && data.organisation.size() <= 140 &&
+        data.permittedPurpose is string && data.permittedPurpose.size() >= 2 && data.permittedPurpose.size() <= 80 &&
+        data.permittedDataCategories is list && data.permittedDataCategories.size() >= 1 && data.permittedDataCategories.size() <= 10 &&
+        (data.permittedDataCategories[0] is string && data.permittedDataCategories[0].size() <= 80) &&
+        data.consentStatus in ['VALID', 'EXPIRED', 'REVOKED', 'PENDING'] &&
+        data.expiryDate is string && data.expiryDate.size() >= 10 && data.expiryDate.size() <= 40 &&
+        data.externalSourceId is string && data.externalSourceId.size() >= 2 && data.externalSourceId.size() <= 80 &&
+        data.createdByUid is string && data.createdByUid.size() >= 1 && data.createdByUid.size() <= 128 &&
+        data.isSynthetic is bool;
+    }
+
+    function isValidAuditEvent(data) {
+      return data.keys().hasAll([
+          'eventId', 'requestId', 'eventType', 'timestamp',
+          'actor', 'actorUid', 'decision', 'explanation', 'policyReferences', 'isSynthetic'
+        ]) &&
+        data.keys().hasOnly([
+          'eventId', 'requestId', 'eventType', 'timestamp',
+          'actor', 'actorUid', 'decision', 'explanation', 'policyReferences', 'isSynthetic'
+        ]) &&
+        isValidId(data.eventId) &&
+        data.requestId is string && data.requestId.size() <= 64 &&
+        data.eventType in [
+          'ACCESS_REQUEST_SUBMITTED',
+          'ACCESS_REQUEST_EVALUATED',
+          'POLICY_CREATED',
+          'POLICY_DEACTIVATED',
+          'CONSENT_REFERENCE_CHECKED',
+          'ACCESS_DECISION_RECORDED'
+        ] &&
+        data.timestamp is string && data.timestamp.size() >= 10 && data.timestamp.size() <= 40 &&
+        data.actor is string && data.actor.size() >= 2 && data.actor.size() <= 140 &&
+        data.actorUid is string && data.actorUid.size() >= 1 && data.actorUid.size() <= 128 &&
+        data.decision is string && data.decision.size() <= 40 &&
+        data.explanation is string && data.explanation.size() >= 2 && data.explanation.size() <= 1000 &&
+        data.policyReferences is list && data.policyReferences.size() <= 20 &&
+        (data.policyReferences.size() == 0 || (data.policyReferences[0] is string && data.policyReferences[0].size() <= 64)) &&
+        data.isSynthetic is bool;
+    }
+
+    function isValidSystemMeta(data) {
+      return data.keys().hasAll(['seeded', 'seededAt', 'appVersion', 'seededByUid']) &&
+        data.keys().hasOnly(['seeded', 'seededAt', 'appVersion', 'seededByUid']) &&
+        data.seeded is bool &&
+        data.seededAt is string && data.seededAt.size() >= 10 && data.seededAt.size() <= 40 &&
+        data.appVersion is string && data.appVersion.size() >= 1 && data.appVersion.size() <= 24 &&
+        data.seededByUid is string && data.seededByUid.size() >= 1 && data.seededByUid.size() <= 128;
+    }
+
+    // --- Collection Rules ---
+
+    // Admins lookup (read self only; console provisioned)
+    match /admins/{adminUid} {
+      allow get: if isEmailVerified() && isValidId(adminUid) && request.auth.uid == adminUid;
+      allow list, create, update, delete: if false;
+    }
+
+    // System Meta (seed marker)
+    match /systemMeta/{metaId} {
+      allow get: if isEmailVerified() && isValidId(metaId);
+      allow list: if false;
+      allow create: if isEmailVerified() && isValidId(metaId) &&
+        isValidSystemMeta(incoming()) &&
+        incoming().seededByUid == request.auth.uid &&
+        (isAdmin() || isNotSeededYet());
+      allow update: if isAdmin() && isValidId(metaId) && isValidSystemMeta(incoming());
+      allow delete: if false;
+    }
+
+    // Researchers
+    match /researchers/{researcherId} {
+      allow get: if isEmailVerified() && isValidId(researcherId);
+      allow list: if isEmailVerified() && (
+        existing().isSynthetic == true ||
+        existing().createdByUid == request.auth.uid ||
+        isTokenAdmin()
+      );
+      allow create: if isEmailVerified() && isValidId(researcherId) &&
+        isValidResearcher(incoming()) &&
+        incoming().researcherId == researcherId &&
+        incoming().createdByUid == request.auth.uid &&
+        (
+          (incoming().isSynthetic == false) ||
+          (incoming().isSynthetic == true && (isAdmin() || isNotSeededYet()))
+        );
+      allow update: if isAdmin() && isValidId(researcherId) && isValidResearcher(incoming()) &&
+        incoming().researcherId == existing().researcherId &&
+        incoming().createdByUid == existing().createdByUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().isSynthetic == existing().isSynthetic;
+      allow delete: if isAdmin() && isValidId(researcherId) && existing().isSynthetic == true;
+    }
+
+    // Access Requests
+    match /accessRequests/{requestId} {
+      allow get: if isEmailVerified() && isValidId(requestId) && (
+        existing().isSynthetic == true ||
+        existing().submittedByUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow list: if isEmailVerified() && (
+        existing().isSynthetic == true ||
+        existing().submittedByUid == request.auth.uid ||
+        isTokenAdmin()
+      );
+      allow create: if isEmailVerified() && isValidId(requestId) &&
+        isValidAccessRequest(incoming()) &&
+        incoming().requestId == requestId &&
+        incoming().submittedByUid == request.auth.uid &&
+        (
+          (incoming().isSynthetic == false && incoming().decisionStatus == 'PENDING' && incoming().policyCompliant == false) ||
+          (incoming().isSynthetic == true && (isAdmin() || isNotSeededYet()))
+        );
+      allow update: if isEmailVerified() && isValidId(requestId) &&
+        isValidAccessRequest(incoming()) &&
+        (isAdmin() || existing().submittedByUid == request.auth.uid) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'decisionStatus', 'decisionExplanation', 'evaluatedConditions',
+          'matchedPolicyIds', 'policyCompliant', 'evaluatedAt'
+        ]) &&
+        incoming().requestId == existing().requestId &&
+        incoming().researcherId == existing().researcherId &&
+        incoming().organisation == existing().organisation &&
+        incoming().country == existing().country &&
+        incoming().stateOrRegion == existing().stateOrRegion &&
+        incoming().dataCategory == existing().dataCategory &&
+        incoming().purpose == existing().purpose &&
+        incoming().requestedDurationDays == existing().requestedDurationDays &&
+        incoming().consentReferenceId == existing().consentReferenceId &&
+        incoming().submittedAt == existing().submittedAt &&
+        incoming().submittedByUid == existing().submittedByUid &&
+        incoming().isSynthetic == existing().isSynthetic &&
+        (existing().decisionStatus in ['PENDING', 'REVIEW'] || isAdmin());
+      allow delete: if isAdmin() && isValidId(requestId) && existing().isSynthetic == true;
+    }
+
+    // Governance Policies
+    match /governancePolicies/{policyId} {
+      allow get: if isEmailVerified() && isValidId(policyId);
+      allow list: if isEmailVerified() && (
+        existing().isSynthetic == true ||
+        existing().createdByUid == request.auth.uid ||
+        existing().status in ['ACTIVE', 'INACTIVE'] ||
+        isTokenAdmin()
+      );
+      allow create: if isEmailVerified() && isValidId(policyId) &&
+        isValidGovernancePolicy(incoming()) &&
+        incoming().policyId == policyId &&
+        incoming().createdByUid == request.auth.uid &&
+        (
+          (incoming().isSynthetic == false && isAdmin()) ||
+          (incoming().isSynthetic == true && (isAdmin() || isNotSeededYet()))
+        );
+      allow update: if isAdmin() && isValidId(policyId) &&
+        isValidGovernancePolicy(incoming()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status']) &&
+        incoming().policyId == existing().policyId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().createdByUid == existing().createdByUid &&
+        incoming().isSynthetic == existing().isSynthetic;
+      allow delete: if isAdmin() && isValidId(policyId) && existing().isSynthetic == true;
+    }
+
+    // Consent References
+    match /consentReferences/{consentRefId} {
+      allow get: if isEmailVerified() && isValidId(consentRefId);
+      allow list: if isEmailVerified() && (
+        existing().isSynthetic == true ||
+        existing().createdByUid == request.auth.uid ||
+        isTokenAdmin()
+      );
+      allow create: if isEmailVerified() && isValidId(consentRefId) &&
+        isValidConsentReference(incoming()) &&
+        incoming().consentReferenceId == consentRefId &&
+        incoming().createdByUid == request.auth.uid &&
+        (
+          (incoming().isSynthetic == false && isAdmin()) ||
+          (incoming().isSynthetic == true && (isAdmin() || isNotSeededYet()))
+        );
+      allow update: if false;
+      allow delete: if isAdmin() && isValidId(consentRefId) && existing().isSynthetic == true;
+    }
+
+    // Audit Events (Append-Only)
+    match /auditEvents/{eventId} {
+      allow get: if isEmailVerified() && isValidId(eventId) && (
+        existing().isSynthetic == true ||
+        existing().actorUid == request.auth.uid ||
+        isAdmin()
+      );
+      allow list: if isEmailVerified() && (
+        existing().isSynthetic == true ||
+        existing().actorUid == request.auth.uid ||
+        isTokenAdmin()
+      );
+      allow create: if isEmailVerified() && isValidId(eventId) &&
+        isValidAuditEvent(incoming()) &&
+        incoming().eventId == eventId &&
+        incoming().actorUid == request.auth.uid &&
+        (
+          (incoming().isSynthetic == false) ||
+          (incoming().isSynthetic == true && (isAdmin() || isNotSeededYet()))
+        );
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

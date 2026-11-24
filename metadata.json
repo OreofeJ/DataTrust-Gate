@@ -1,0 +1,6 @@
+{
+  "name": "DataTrust Gate",
+  "description": "Community-governed health research data access control, policy evaluation, and audit trail prototype.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-ivory: #f7f6f2;
+    --surface-paper: #ffffff;
+    --surface-stone: #f0efe9;
+    --ink-navy: #0f1c2e;
+    --ink-slate: #3b495c;
+    --ink-muted: #647182;
+    --accent-teal: #1f6e72;
+    --accent-teal-soft: #eaf3f3;
+    --status-amber: #b4690e;
+    --status-amber-soft: #fcf4e7;
+    --status-crimson: #9e2a2b;
+    --status-crimson-soft: #fbeeee;
+    --status-emerald: #176252;
+    --status-emerald-soft: #ebf6f3;
+    --border-hairline: #e2e0d8;
+  }
+
+  html {
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-ivory);
+    color: var(--ink-navy);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .font-mono-tabular {
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

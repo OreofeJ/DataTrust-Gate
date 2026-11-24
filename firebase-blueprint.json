@@ -1,0 +1,511 @@
+{
+  "entities": {
+    "Researcher": {
+      "title": "Researcher",
+      "description": "Synthetic or registered researcher profile participating in community-governed data access requests.",
+      "type": "object",
+      "properties": {
+        "researcherId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique researcher identifier"
+        },
+        "fullName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120,
+          "description": "Fictional researcher display name"
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140,
+          "description": "Affiliated research institution or organisation"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Country label for governance context"
+        },
+        "stateOrRegion": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Synthetic state or region label"
+        },
+        "roleTitle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Academic or clinical role title"
+        },
+        "verificationStatus": {
+          "type": "string",
+          "enum": ["VERIFIED", "PENDING", "SUSPENDED"],
+          "maxLength": 20,
+          "description": "Credential verification state"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "Creation timestamp"
+        },
+        "createdByUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "UID of creator"
+        },
+        "isSynthetic": {
+          "type": "boolean",
+          "description": "Indicates synthetic demonstration data"
+        }
+      },
+      "required": [
+        "researcherId",
+        "fullName",
+        "organisation",
+        "country",
+        "stateOrRegion",
+        "roleTitle",
+        "verificationStatus",
+        "createdAt",
+        "createdByUid",
+        "isSynthetic"
+      ]
+    },
+    "AccessRequest": {
+      "title": "AccessRequest",
+      "description": "Health research data access request evaluated deterministically against governance policies.",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique access request identifier"
+        },
+        "researcherId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Requesting researcher identifier"
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140,
+          "description": "Requesting organisation name"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Country label"
+        },
+        "stateOrRegion": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 80,
+          "description": "Nigerian state or region synthetic geographic label"
+        },
+        "dataCategory": {
+          "type": "string",
+          "enum": [
+            "Demographic information",
+            "Health records",
+            "Mental-health information",
+            "Genomic information",
+            "Location information",
+            "Survey responses",
+            "Other research data"
+          ],
+          "maxLength": 64,
+          "description": "Requested dataset category"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "Academic research",
+            "Mental-health research",
+            "Public-health research",
+            "AI model development",
+            "Anonymous statistical analysis",
+            "Commercial research"
+          ],
+          "maxLength": 64,
+          "description": "Intended research purpose"
+        },
+        "requestedDurationDays": {
+          "type": "integer",
+          "description": "Requested access window in days (1-1095)"
+        },
+        "consentReferenceId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Linked synthetic or external consent reference ID"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "ISO submission timestamp"
+        },
+        "evaluatedAt": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "ISO evaluation timestamp or empty string"
+        },
+        "decisionStatus": {
+          "type": "string",
+          "enum": ["PENDING", "APPROVED", "DENIED", "REVIEW"],
+          "maxLength": 20,
+          "description": "Deterministic governance decision status"
+        },
+        "decisionExplanation": {
+          "type": "string",
+          "maxLength": 1200,
+          "description": "Plain-language explanation of the decision"
+        },
+        "evaluatedConditions": {
+          "type": "array",
+          "description": "List of policy conditions checked during evaluation"
+        },
+        "matchedPolicyIds": {
+          "type": "array",
+          "description": "IDs of policies evaluated against this request"
+        },
+        "policyCompliant": {
+          "type": "boolean",
+          "description": "True only when all applicable governance requirements are met"
+        },
+        "submittedByUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Firebase Auth UID of the submitter"
+        },
+        "isSynthetic": {
+          "type": "boolean",
+          "description": "Marks initial synthetic demonstration records"
+        }
+      },
+      "required": [
+        "requestId",
+        "researcherId",
+        "organisation",
+        "country",
+        "stateOrRegion",
+        "dataCategory",
+        "purpose",
+        "requestedDurationDays",
+        "consentReferenceId",
+        "submittedAt",
+        "evaluatedAt",
+        "decisionStatus",
+        "decisionExplanation",
+        "evaluatedConditions",
+        "matchedPolicyIds",
+        "policyCompliant",
+        "submittedByUid",
+        "isSynthetic"
+      ]
+    },
+    "GovernancePolicy": {
+      "title": "GovernancePolicy",
+      "description": "Community-governed data access policy rule evaluated deterministically.",
+      "type": "object",
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique policy identifier"
+        },
+        "policyName": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160,
+          "description": "Human-readable policy title"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Policy scope and intent"
+        },
+        "permittedOrganisations": {
+          "type": "array",
+          "description": "Allowed organisations or wildcard *"
+        },
+        "permittedPurposes": {
+          "type": "array",
+          "description": "Allowed research purposes"
+        },
+        "permittedDataCategories": {
+          "type": "array",
+          "description": "Allowed dataset categories"
+        },
+        "maxDurationDays": {
+          "type": "integer",
+          "description": "Maximum permitted access duration in days"
+        },
+        "requiresConsent": {
+          "type": "boolean",
+          "description": "Whether a valid consent reference is mandatory"
+        },
+        "communityRestrictionNote": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "Community governance condition or restriction note"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "INACTIVE"],
+          "maxLength": 20,
+          "description": "Whether policy is active or deactivated"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "Creation timestamp"
+        },
+        "createdByUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Firebase Auth UID of creator"
+        },
+        "isSynthetic": {
+          "type": "boolean",
+          "description": "Indicates synthetic demonstration data"
+        }
+      },
+      "required": [
+        "policyId",
+        "policyName",
+        "description",
+        "permittedOrganisations",
+        "permittedPurposes",
+        "permittedDataCategories",
+        "maxDurationDays",
+        "requiresConsent",
+        "communityRestrictionNote",
+        "status",
+        "createdAt",
+        "createdByUid",
+        "isSynthetic"
+      ]
+    },
+    "ConsentReference": {
+      "title": "ConsentReference",
+      "description": "Synthetic consent reference record modeling future external HDC verification.",
+      "type": "object",
+      "properties": {
+        "consentReferenceId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique consent reference identifier"
+        },
+        "pseudonymousSubjectId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Pseudonymous subject token"
+        },
+        "organisation": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140,
+          "description": "Organisation authorised under consent"
+        },
+        "permittedPurpose": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Purpose covered by this consent"
+        },
+        "permittedDataCategories": {
+          "type": "array",
+          "description": "Categories covered by this consent"
+        },
+        "consentStatus": {
+          "type": "string",
+          "enum": ["VALID", "EXPIRED", "REVOKED", "PENDING"],
+          "maxLength": 20,
+          "description": "Current status of consent reference"
+        },
+        "expiryDate": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "Consent expiration timestamp"
+        },
+        "externalSourceId": {
+          "type": "string",
+          "maxLength": 80,
+          "description": "Synthetic external HDC reference placeholder"
+        },
+        "createdByUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Firebase Auth UID of seed/creator"
+        },
+        "isSynthetic": {
+          "type": "boolean",
+          "description": "Indicates synthetic demonstration data"
+        }
+      },
+      "required": [
+        "consentReferenceId",
+        "pseudonymousSubjectId",
+        "organisation",
+        "permittedPurpose",
+        "permittedDataCategories",
+        "consentStatus",
+        "expiryDate",
+        "externalSourceId",
+        "createdByUid",
+        "isSynthetic"
+      ]
+    },
+    "AuditEvent": {
+      "title": "AuditEvent",
+      "description": "Append-only application-level governance audit record.",
+      "type": "object",
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9_\\-]+$",
+          "description": "Unique audit event identifier"
+        },
+        "requestId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Related access request ID or empty string"
+        },
+        "eventType": {
+          "type": "string",
+          "enum": [
+            "ACCESS_REQUEST_SUBMITTED",
+            "ACCESS_REQUEST_EVALUATED",
+            "POLICY_CREATED",
+            "POLICY_DEACTIVATED",
+            "CONSENT_REFERENCE_CHECKED",
+            "ACCESS_DECISION_RECORDED"
+          ],
+          "maxLength": 40,
+          "description": "Audited governance operation type"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "Event timestamp"
+        },
+        "actor": {
+          "type": "string",
+          "maxLength": 140,
+          "description": "Actor label or email performing operation"
+        },
+        "actorUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Firebase Auth UID of actor"
+        },
+        "decision": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "Resulting decision or policy state"
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Detailed event summary"
+        },
+        "policyReferences": {
+          "type": "array",
+          "description": "Policy IDs referenced by this event"
+        },
+        "isSynthetic": {
+          "type": "boolean",
+          "description": "Indicates synthetic demonstration data"
+        }
+      },
+      "required": [
+        "eventId",
+        "requestId",
+        "eventType",
+        "timestamp",
+        "actor",
+        "actorUid",
+        "decision",
+        "explanation",
+        "policyReferences",
+        "isSynthetic"
+      ]
+    },
+    "SystemMeta": {
+      "title": "SystemMeta",
+      "description": "Seed state and synthetic demonstration metadata marker.",
+      "type": "object",
+      "properties": {
+        "seeded": {
+          "type": "boolean",
+          "description": "Whether initial synthetic dataset has been seeded"
+        },
+        "seededAt": {
+          "type": "string",
+          "format": "date-time",
+          "maxLength": 40,
+          "description": "Timestamp of initial seed"
+        },
+        "appVersion": {
+          "type": "string",
+          "maxLength": 24,
+          "description": "Application version string"
+        },
+        "seededByUid": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "UID that performed initial seed"
+        }
+      },
+      "required": ["seeded", "seededAt", "appVersion", "seededByUid"]
+    }
+  },
+  "firestore": {
+    "/researchers/{researcherId}": {
+      "schema": { "$ref": "#/entities/Researcher" },
+      "description": "Fictional researcher profiles"
+    },
+    "/accessRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/AccessRequest" },
+      "description": "Health data access requests and deterministic governance decisions"
+    },
+    "/governancePolicies/{policyId}": {
+      "schema": { "$ref": "#/entities/GovernancePolicy" },
+      "description": "Community governance rules and active/inactive status"
+    },
+    "/consentReferences/{consentRefId}": {
+      "schema": { "$ref": "#/entities/ConsentReference" },
+      "description": "Synthetic consent reference records for verification"
+    },
+    "/auditEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/AuditEvent" },
+      "description": "Append-only application-level governance audit trail"
+    },
+    "/systemMeta/{metaId}": {
+      "schema": { "$ref": "#/entities/SystemMeta" },
+      "description": "Safe idempotent seed marker"
+    }
+  }
+}
